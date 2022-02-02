@@ -24,7 +24,7 @@ class ListDish(APIView):
         except Dish.DoesNotExist:
             raise Http404
 
-    def get(self, request,  format=None):
+    def get(self, request, pk=None, format=None):
         queryset = Dish.objects.all()
         serializer = DishSerializer(queryset, many=True)        
         return Response(serializer.data) # why we cannot return just serializer
