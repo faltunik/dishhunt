@@ -85,4 +85,4 @@ class ListDish(APIView):
 def about(request):
     queryset = Dish.objects.all()
     serializer = DishSerializer(queryset, many=True)       
-    return Response(serializer)
+    return Response(serializer.data)
