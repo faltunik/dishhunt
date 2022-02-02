@@ -37,6 +37,7 @@ class Dish(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         img= Image.open(self.recipeimage.path) # opening image
+        img.name = f"{self.title}-{self.id}-{self.hunter}"
         if img.height > 300 or img.width > 300 :
             output_size = (300, 300)
             img.thumbnail(output_size)

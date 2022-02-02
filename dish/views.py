@@ -1,3 +1,4 @@
+from functools import partial
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 from rest_framework.views import APIView
@@ -6,7 +7,7 @@ from rest_framework.decorators import api_view
 from rest_framework import authentication, permissions
 from .models import Dish
 from .serializers import DishSerializer
-
+from rest_framework import serializers, viewsets, status
 
 class ListDish(APIView):
     """
@@ -24,17 +25,55 @@ class ListDish(APIView):
         except Dish.DoesNotExist:
             raise Http404
 
+    # if since we are not getting pk, thus we wrote it is equal to None and Format is imp but idky
     def get(self, request, pk=None, format=None):
-        queryset = Dish.objects.all()
-        serializer = DishSerializer(queryset, many=True)        
-        return Response(serializer.data) # why we cannot return just serializer
+        if pk :
+            queryset = Dish.objects.get(pk=pk)
+            if queryset:
+                serializer = DishSerializer(queryset)
+            else:
+                return Response(status=status.HTTP_404_NOT_FOUND)            
+        else:            
+            queryset = Dish.objects.all()
+            serializer = DishSerializer(queryset, many=True)        
+        return Response(serializer.data) #why we cannot return just serializer
 
-    def retrieve(self, request, pk= None, format= None):
+    def post(self, request):
+        serializer = DishSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(hunter = request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request, pk, format= None):
         queryset = Dish.objects.all()
         dish = get_object_or_404(queryset, pk=pk)
         serializer = DishSerializer(dish)
         return Response(serializer.data)
 
+    def delete(self, request, pk, format= None):
+        queryset = Dish.objects.all()
+        dish = get_object_or_404(queryset, pk=pk)
+        dish.delete()
+        return Response({'msg': 'Deletion is done' })
+
+    def put(self, request, pk, format = None):
+        queryset = Dish.objects.all()
+        dish = get_object_or_404(queryset, pk=pk)
+        serializer = DishSerializer(dish, data=request.data)
+        if serializer.is_valid():
+            serializer.save(hunter = request.user)
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, pk, format= None):
+        queryset = Dish.objects.all()
+        dish = get_object_or_404(queryset, pk=pk)
+        serializer = DishSerializer(dish, data=request.data, partial= True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
