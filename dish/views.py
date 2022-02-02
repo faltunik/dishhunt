@@ -27,15 +27,20 @@ class ListDish(APIView):
 
     # if since we are not getting pk, thus we wrote it is equal to None and Format is imp but idky
     def get(self, request, pk=None, format=None):
+        queryset = Dish.objects.all()
         if pk :
-            queryset = Dish.objects.get(pk=pk)
-            if queryset:
-                serializer = DishSerializer(queryset)
+            print('que1')
+            query = get_object_or_404(queryset, pk=pk)
+            print(query)
+            if query:
+                serializer = DishSerializer(query)
+                print('que2')
             else:
-                return Response(status=status.HTTP_404_NOT_FOUND)            
+                print('que3')
+                raise Http404          
         else:            
-            queryset = Dish.objects.all()
-            serializer = DishSerializer(queryset, many=True)        
+            query = Dish.objects.all()
+            serializer = DishSerializer(query, many=True)        
         return Response(serializer.data) #why we cannot return just serializer
 
     def post(self, request):
