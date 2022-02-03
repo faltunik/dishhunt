@@ -9,80 +9,48 @@ from .models import Dish
 from .serializers import DishSerializer
 from rest_framework import serializers, viewsets, status
 
-class ListDish(APIView):
+
+
+
+class DishViewSet(viewsets.ModelViewSet):
     """
-    View to list all users in the system.
-
-    * Requires token authentication.
-    * Only admin users are able to access this view.
+    A viewset that provides the standard actions
     """
-    # authentication_classes = [authentication.TokenAuthentication]
-    # permission_classes = [permissions.IsAdminUser]
+    
+    queryset = Dish.objects.all()
+    serializer_class = DishSerializer
 
-    def get_object(self, pk):
-        try:
-            return Dish.objects.get(pk=pk)
-        except Dish.DoesNotExist:
-            raise Http404
-
-    # if since we are not getting pk, thus we wrote it is equal to None and Format is imp but idky
-    def get(self, request, pk=None, format=None):
-        queryset = Dish.objects.all()
-        if pk :
-            print('que1')
-            query = get_object_or_404(queryset, pk=pk)
-            print(query)
-            if query:
-                serializer = DishSerializer(query)
-                print('que2')
-            else:
-                print('que3')
-                raise Http404          
-        else:            
-            query = Dish.objects.all()
-            serializer = DishSerializer(query, many=True)        
-        return Response(serializer.data) #why we cannot return just serializer
-
-    def post(self, request):
-        serializer = DishSerializer(data=request.data)
+    def create(self, request):
+        mydata = request.data
+        print(mydata)
+        serializer = DishSerializer(data=mydata)
         if serializer.is_valid():
+            print(request)
             serializer.save(hunter = request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def retrieve(self, request, pk, format= None):
-        queryset = Dish.objects.all()
-        dish = get_object_or_404(queryset, pk=pk)
-        serializer = DishSerializer(dish)
-        return Response(serializer.data)
-
-    def delete(self, request, pk, format= None):
-        queryset = Dish.objects.all()
-        dish = get_object_or_404(queryset, pk=pk)
-        dish.delete()
-        return Response({'msg': 'Deletion is done' })
-
-    def put(self, request, pk, format = None):
-        queryset = Dish.objects.all()
-        dish = get_object_or_404(queryset, pk=pk)
-        serializer = DishSerializer(dish, data=request.data)
+    def partial_update(self, request, *args, **kwargs):
+        super().partial_update(request, *args, **kwargs)
+        serializer = DishSerializer(data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save(hunter = request.user)
-            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def patch(self, request, pk, format= None):
-        queryset = Dish.objects.all()
-        dish = get_object_or_404(queryset, pk=pk)
-        serializer = DishSerializer(dish, data=request.data, partial= True)
-        if serializer.is_valid():
+            print(request)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
-def about(request):
-    queryset = Dish.objects.all()
-    serializer = DishSerializer(queryset, many=True)       
-    return Response(serializer.data)
+    def update(self, request, *args, **kwargs):
+        super().update(request, *args, **kwargs)
+        serializer = DishSerializer(data=request.data)
+        if serializer.is_valid():
+            print(request)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        
+    
+
+
+    

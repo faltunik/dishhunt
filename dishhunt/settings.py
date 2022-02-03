@@ -14,6 +14,7 @@ from datetime import timedelta
 import os
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -76,12 +77,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'dishhunt.wsgi.application'
 
+# REST_FRAMEWORK = {
+#     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+#     'PAGE_SIZE': 2
+# }
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
-
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 2,
 }
 
 SIMPLE_JWT = {
@@ -173,4 +179,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.CustomUser'
 
 
+# def read_creds(filename):
+#     with open(filename) as f:
+#         credentials = json.load(f)
+#     return credentials
+
+# mycred = read_creds("secret.json")
+
+myemail = os.environ.get('EMAIL')
+mypassword = os.environ.get('PASSWORD')
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
 
