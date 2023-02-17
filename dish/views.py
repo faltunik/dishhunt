@@ -19,19 +19,27 @@ class DishViewSet(viewsets.ModelViewSet):
     
     queryset = Dish.objects.all()
     serializer_class = DishSerializer
+    def printLine(self) :
+        for _ in range(10):
+            print("--", end="")
 
     def create(self, request):
         mydata = request.data
+        self.printLine()
+        print(request)
         print(mydata)
+        print(request.user)
+        self.printLine()
         serializer = DishSerializer(data=mydata)
         if serializer.is_valid():
             print(request)
-            serializer.save(hunter = request.user)
+            print(request.user)
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def partial_update(self, request, *args, **kwargs):
-        super().partial_update(request, *args, **kwargs)
+        #super().partial_update(request, *args, **kwargs)
         serializer = DishSerializer(data=request.data, partial=True)
         if serializer.is_valid():
             print(request)

@@ -186,9 +186,12 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 # mycred = read_creds("secret.json")
 
-myemail = os.environ.get('EMAIL')
-mypassword = os.environ.get('PASSWORD')
+# myemail = os.environ.get('EMAIL')
+# mypassword = os.environ.get('PASSWORD')
 
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_USE_TLS = True
+# EMAIL_HOST = 'smtp.gmail.com'
+
+CORS_ALLOW_ALL_ORIGINS = True
+
 
